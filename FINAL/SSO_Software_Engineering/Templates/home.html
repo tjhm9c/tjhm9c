@@ -1,0 +1,61 @@
+{% from "macros.html" import load_scripts %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{ load_scripts() }}
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script>
+        function do_search() {
+            var word = $("#word").val();
+            var json_data = {"data": word};
+            $.ajax({
+                url: "/word_go",
+                type: "POST",
+                datatype: "json",
+                data: JSON.stringify(json_data),
+                contentType: "application/json; charset=utf-8",
+                success: function(response){
+                    response = JSON.parse(response);
+                    if (response.success){
+
+                    } else {
+                        alert("FAIL");
+                    }
+                },
+                error: function (error) {
+                    alert("ERROR");
+                }
+            })
+        }
+
+        var log_source = new EventSource("/link_send");
+        log_source.onmessage = function (event) {
+            $("#my_links").append(event.data);
+        };
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col">
+      <h2 style="text-align:center">Hello {{ name }}</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+    <p>Wikipedia To Philosophy Tracer</p>
+    <div class="searcher">
+        <input id="word" placeholder="Enter a word...">
+        <button type="button" onclick="do_search()">Go</button>
+    </div>
+    <ul id="my_links">
+    </ul>
+</div>
+</body>
+</html>
